@@ -1,0 +1,62 @@
+[gd_scene load_steps=6 format=3 uid="uid://bbsw7p652fa5"]
+
+[ext_resource type="Script" path="res://Player.gd" id="1_bawqv"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_nasln"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_bno1a"]
+sky_material = SubResource("ProceduralSkyMaterial_nasln")
+
+[sub_resource type="Environment" id="Environment_vqibg"]
+background_mode = 2
+sky = SubResource("Sky_bno1a")
+tonemap_mode = 2
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u0hqu"]
+
+[node name="Game" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_vqibg")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="Baseplate" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+use_collision = true
+size = Vector3(20, 1, 20)
+
+[node name="Player" type="CharacterBody3D" parent="World"]
+script = ExtResource("1_bawqv")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="World/Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_u0hqu")
+
+[node name="Camera3D" type="Camera3D" parent="World/Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+current = true
+
+[node name="JumpBufferTimer" type="Timer" parent="World/Player"]
+wait_time = 0.1
+one_shot = true
+
+[node name="CoyoteTimer" type="Timer" parent="World/Player"]
+wait_time = 0.1
+one_shot = true
+
+[connection signal="timeout" from="World/Player/JumpBufferTimer" to="World/Player" method="_on_jump_buffer_timer_timeout"]
+[connection signal="timeout" from="World/Player/CoyoteTimer" to="World/Player" method="_on_coyote_timer_timeout"]
